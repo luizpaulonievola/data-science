@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  jupyter:
+    # Localização do Dockerfile relativa a este docker-compose.yml
+    build: .
+    restart: on-failure
+    container_name: lab
+    volumes:
+      # Seu volume principal para notebooks e arquivos de projeto (mapeado para /app)
+      - /home/ubuntu/freqtrade:/app
+
+      # --- VOLUMES PARA PERSISTÊNCIA DAS CONFIGURAÇÕES DO JUPYTERLAB ---
+      # Mapeia as configurações gerais do Jupyter do usuário 'analyst'
+      - /home/ubuntu/jupyter_lab_config:/home/analyst/.jupyter # <-- Caminho correto para o usuário 'analyst'
+
+      # Mapeia os dados locais do Jupyter do usuário 'analyst'
+      - /home/ubuntu/jupyter_lab_data:/home/analyst/.local/share/jupyter # <-- Caminho correto para o usuário 'analyst'
+      # ---------------------------------------------------------------------
+
+    # Diretório de trabalho onde o JupyterLab inicia
+    working_dir: /app
+
+    cpus: 2.0
+    mem_limit: 15G
+    memswap_limit: -1
+    networks:
+      - monitoring
+
+    # Labels do Traefik (mantenha ou atualize para HTTPS)
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jupyter.rule=Host(`jupyter.oracle.vm`)" # Seu hostname
+      - "traefik.http.routers.jupyter.entrypoints=web" # Mude para websecure se/quando usar HTTPS
+      # Se usar HTTPS, adicione as labels tls e certresolver aqui:
+      # - "traefik.http.routers.jupyter.tls=true"
+      # - "traefik.http.routers.jupyter.tls.certresolver=myresolver" # Nome do seu resolver
+      - "traefik.http.services.jupyter.loadbalancer.server.port=6262" # Porta interna do Jupyter
+      - "traefik.http.routers.jupyter.service=jupyter"
+      - "traefik.http.services.jupyter.loadbalancer.passhostheader=true"
+
+networks:
+  monitoring:
+    external: true
