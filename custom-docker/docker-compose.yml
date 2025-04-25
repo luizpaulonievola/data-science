@@ -2,20 +2,15 @@ version: '3.8'
 
 services:
   jupyter:
-    # Localização do Dockerfile relativa a este docker-compose.yml
     build: .
     restart: on-failure
     container_name: lab
     volumes:
-      # Seu volume principal para notebooks e arquivos de projeto (mapeado para /app)
       - /home/ubuntu/freqtrade:/app
 
       # --- VOLUMES PARA PERSISTÊNCIA DAS CONFIGURAÇÕES DO JUPYTERLAB ---
-      # Mapeia as configurações gerais do Jupyter do usuário 'analyst'
-      - /home/ubuntu/jupyter_lab_config:/home/analyst/.jupyter # <-- Caminho correto para o usuário 'analyst'
-
-      # Mapeia os dados locais do Jupyter do usuário 'analyst'
-      - /home/ubuntu/jupyter_lab_data:/home/analyst/.local/share/jupyter # <-- Caminho correto para o usuário 'analyst'
+      - /home/ubuntu/jupyter_lab_config:/home/analyst/.jupyter
+      - /home/ubuntu/jupyter_lab_data:/home/analyst/.local/share/jupyter 
       # ---------------------------------------------------------------------
 
     # Diretório de trabalho onde o JupyterLab inicia
