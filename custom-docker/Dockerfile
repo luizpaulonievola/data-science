@@ -31,11 +31,9 @@ RUN apt-get clean && \
 WORKDIR /app
 
 # ----> INÍCIO DAS CONFIGURAÇÕES JUPYTER <----
-# Cria diretório para configuração global do jupyter ANTES de mudar de usuário
 RUN mkdir -p /etc/jupyter/
 
 # Copia o arquivo de configuração para dentro da imagem
-# (Certifique-se que jupyter_server_config.py está na pasta /home/ubuntu/freqtrade/Projetos)
 COPY jupyter_server_config.py /etc/jupyter/jupyter_server_config.py
 # ----> FIM DAS CONFIGURAÇÕES JUPYTER <----
 
